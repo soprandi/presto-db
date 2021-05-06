@@ -1,0 +1,26 @@
+#Build local images for connectors
+docker build -t presto-db ./presto-server
+docker build -t local-postgresql ./db
+    -> it create a postgresql db with some dummy tables inside
+    -> you can add table adding new init\*.sql scripts
+docker build -t local-elastic ./elastic
+docker build -t kibana ./kibana
+
+#run it
+docker-compose up
+
+localhost:8080 -> presto-db web page (user: admin)
+localhost:9200 -> elastic
+localhost:5601 -> kibana 
+
+#stop it
+docker-compose down
+
+#interact with presto-db
+> using CLI
+ using wsl download CLI from --> https://prestodb.io/docs/current/installation/cli.html and follow the instructions
+ than run
+ ./presto.jar --server localhost:8080
+
+> using jdbc
+  configure a connection to localhost:8080 with username: admin

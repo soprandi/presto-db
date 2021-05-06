@@ -1,0 +1,3 @@
+/*CREATE USER example;
+CREATE DATABASE example;
+GRANT ALL PRIVILEGES ON DATABASE example TO example;*/

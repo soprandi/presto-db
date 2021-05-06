@@ -1,0 +1,57 @@
+version: '3'
+services:
+  presto:
+    container_name: presto-db
+    restart: always
+    image: presto-db
+    build:
+        context: ./presto-server    
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    networks:
+      - presto-db
+  postgresql:
+    container_name: local-postgresql
+    restart: always
+    image: local-postgresql
+    build:
+      context: ./db
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    networks:
+      - presto-db      
+  elastic:
+    container_name: local-elastic
+    restart: always
+    image: local-elastic
+    build:
+      context: ./elastic
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=false
+      - "ES_JAVA_OPTS=-Xms1500m -Xmx1500m"
+      - discovery.type=single-node
+    expose:
+      - 9200
+    ports:
+      - 9200:9200
+    networks:
+      - presto-db 
+  kibana:
+    image: kibana
+    ports:
+      - 5601:5601
+    environment:
+      - ELASTICSEARCH_HOSTS=http://local-elastic:9200
+    depends_on:
+      - elastic
+    networks:
+      - presto-db
+    
+#docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+networks:
+    presto-db:
